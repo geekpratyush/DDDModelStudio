@@ -1,0 +1,2081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDD Modeler Studio - Strategic & Tactical Modeler</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
+    
+    <style>
+        :root {
+            --bg-primary: #09090b;
+            --bg-secondary: #111115;
+            --bg-tertiary: #181822;
+            --border-color: #272732;
+            --text-primary: #f4f4f5;
+            --text-secondary: #a1a1aa;
+            --accent-blue: #2563eb;
+            --accent-green: #16a34a;
+            --accent-purple: #7c3aed;
+            --accent-orange: #ea580c;
+            --accent-red: #dc2626;
+            --sidebar-width: 320px;
+        }
+
+        body.theme-light {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f5f9;
+            --border-color: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+        }
+
+        body.theme-cyberpunk {
+            --bg-primary: #050505;
+            --bg-secondary: #0a0a0f;
+            --bg-tertiary: #12121a;
+            --border-color: #00f2ff33;
+            --text-primary: #00f2ff;
+            --text-secondary: #ff00ff;
+            --accent-blue: #00f2ff;
+            --accent-purple: #ff00ff;
+        }
+
+        body.theme-forest {
+            --bg-primary: #0a0f0a;
+            --bg-secondary: #0f150f;
+            --bg-tertiary: #1a221a;
+            --border-color: #2a352a;
+            --text-primary: #d1d5db;
+            --text-secondary: #a7f3d0;
+            --accent-blue: #10b981;
+            --accent-purple: #059669;
+        }
+
+        body.theme-vsc-dark {
+            --bg-primary: #1e1e1e;
+            --bg-secondary: #252526;
+            --bg-tertiary: #2d2d2d;
+            --border-color: #3e3e42;
+            --text-primary: #d4d4d4;
+            --text-secondary: #858585;
+            --accent-blue: #007acc;
+        }
+
+        body.theme-vsc-light {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f3f3f3;
+            --bg-tertiary: #eeeeee;
+            --border-color: #e1e1e1;
+            --text-primary: #333333;
+            --text-secondary: #616161;
+            --accent-blue: #007acc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Platform Navigation Header */
+        header {
+            height: 60px;
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 100;
+        }
+        .logo-section { display: flex; align-items: center; gap: 12px; }
+        .logo-section i { color: var(--accent-blue); font-size: 1.5rem; }
+        .logo-section h1 { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.02em; }
+        .logo-section span { font-size: 0.7rem; background: rgba(37,99,235,0.15); color: #60a5fa; padding: 2px 8px; border-radius: 4px; font-weight: 600; border: 1px solid rgba(37,99,235,0.3); }
+        .action-toolbar { display: flex; align-items: center; gap: 10px; }
+
+        .btn {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+        .btn:hover { background-color: #222230; border-color: #3f3f52; }
+        .btn-primary { background-color: var(--accent-blue); border-color: var(--accent-blue); }
+        .btn-primary:hover { background-color: #1d4ed8; }
+
+        .app-container { flex: 1; display: flex; position: relative; overflow: hidden; }
+
+        /* Left Side Drawer Control Board Workspace Panel */
+        .sidebar-left {
+            width: var(--sidebar-width);
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+        .tab-nav-strip { display: flex; background-color: var(--bg-primary); border-bottom: 1px solid var(--border-color); padding: 4px; gap: 4px; }
+        .tab-btn { flex: 1; background: none; border: none; color: var(--text-secondary); padding: 10px 0; font-size: 0.8rem; font-weight: 600; cursor: pointer; border-radius: 4px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .tab-btn.active { color: var(--text-primary); background-color: var(--bg-tertiary); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        
+        .palette-viewport { flex: 1; overflow-y: auto; padding: 16px; display: none; }
+        .palette-viewport.active { display: block; }
+        .category-accordion { margin-bottom: 16px; }
+        .category-accordion-title { font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+        .palette-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        
+        .palette-item {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            cursor: grab;
+            text-align: center;
+            transition: all 0.15s ease;
+        }
+        .palette-item:hover { border-color: var(--accent-blue); background-color: rgba(37,99,235,0.04); }
+        .palette-item i { font-size: 1.25rem; }
+        .palette-item span { font-size: 0.75rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
+
+        /* Infinite Diagram Map Layout Viewport Canvas */
+        .canvas-viewport { 
+            flex: 1; 
+            position: relative; 
+            background-color: var(--bg-primary); 
+            background-image: 
+                radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 100px 100px, 20px 20px, 20px 20px;
+            overflow: hidden; 
+            cursor: grab; 
+        }
+        #canvas-surface { position: absolute; width: 5000px; height: 5000px; top: 0; left: 0; transform-origin: 0 0; }
+        #svg-edge-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; }
+
+        /* Dynamic Visual Fluid Connector Flow Pipelines Styling Rules */
+        @keyframes dataFluidFlow { to { stroke-dashoffset: -20; } }
+        .animated-flow-line { stroke-dasharray: 6, 4; animation: dataFluidFlow 1.2s linear infinite; }
+        
+        /* Enhanced Wire Interaction Styles */
+        .wire-path-group { cursor: pointer; transition: all 0.2s ease; pointer-events: auto; }
+        .wire-path-group:hover .static-base-line { stroke: #60a5fa !important; stroke-width: 5 !important; }
+        .wire-path-group.selected .static-base-line { 
+            stroke: var(--accent-blue) !important; 
+            stroke-width: 6 !important;
+            filter: drop-shadow(0 0 8px rgba(37, 99, 235, 0.8));
+        }
+        .wire-hit-area { fill: none; stroke: transparent; stroke-width: 20; cursor: pointer; }
+
+        /* Component Node Containers Core Structure Layout */
+        .node { 
+            position: absolute; 
+            background-color: var(--bg-secondary); 
+            border: 2px solid var(--border-color); 
+            border-radius: 8px; 
+            width: 140px; 
+            height: 65px; 
+            padding: 12px; 
+            z-index: 20; 
+            cursor: move; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4); 
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+        }
+        .node:hover { border-color: #3f3f52; background-color: var(--bg-tertiary); }
+        .node.selected { 
+            border-color: var(--accent-blue) !important; 
+            box-shadow: 0 0 0 2px rgba(37,99,235,0.4), 0 0 20px rgba(37,99,235,0.3); 
+            transform: scale(1.02) translateY(-2px);
+            z-index: 30;
+            background-color: var(--bg-tertiary);
+        }
+        .node.is-dragging {
+            transition: none !important;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            opacity: 0.9;
+            z-index: 1000;
+        }
+        
+        /* Specialized Enclosure Housing Actor Frame Subsystems Box Styles */
+        .node-actor-container { 
+            background-color: var(--bg-tertiary); 
+            border: 2px dashed var(--text-secondary); 
+            width: 480px; 
+            height: 320px; 
+            z-index: 10; 
+            padding: 16px; 
+            transition: border-color 0.2s ease, border-style 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+        }
+        .node-actor-container.selected { 
+            border-color: var(--accent-blue) !important; 
+            border-style: solid; 
+            box-shadow: 0 0 0 2px rgba(37,99,235,0.2), 0 20px 40px rgba(0,0,0,0.6);
+            transform: scale(1.01);
+            z-index: 15;
+            background-color: rgba(37,99,235,0.05);
+        }
+        .node-actor-container.is-dragging {
+            transition: none !important;
+            border-style: solid;
+            background-color: rgba(37,99,235,0.1);
+        }
+
+        .resize-handle {
+            position: absolute;
+            right: 4px;
+            bottom: 4px;
+            width: 12px;
+            height: 12px;
+            cursor: nwse-resize;
+            border-right: 2px solid var(--text-secondary);
+            border-bottom: 2px solid var(--text-secondary);
+            opacity: 0.3;
+            transition: opacity 0.2s ease;
+        }
+        .node:hover .resize-handle { opacity: 0.8; }
+        .resize-handle:hover { border-color: var(--accent-blue); opacity: 1 !important; }
+
+        .node-header-wrap { display: flex; align-items: center; gap: 8px; }
+        .node-header-wrap i { font-size: 1.3rem; }
+        .node-text-title { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
+        
+        /* Floating Action Context HUD Ribbon Controls Layout */
+        .node-context-hud { position: absolute; top: -36px; left: 12px; background-color: var(--bg-tertiary); border: 1px solid #3f3f52; border-radius: 4px; padding: 2px; display: flex; gap: 2px; opacity: 0; pointer-events: none; transition: opacity 0.15s ease; z-index: 50; }
+        .node-context-hud::after { content: ""; position: absolute; top: 100%; left: 0; width: 100%; height: 12px; }
+        .node:hover > .node-context-hud, .node.selected > .node-context-hud { opacity: 1; pointer-events: auto; }
+        .hud-btn { background: none; border: none; color: var(--text-secondary); width: 24px; height: 24px; border-radius: 3px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.75rem; }
+        .hud-btn:hover { color: var(--text-primary); background-color: var(--border-color); }
+        .hud-btn.hud-del:hover { background-color: var(--accent-red); }
+
+        /* Routing Anchor Port Interfaces Points Layout Elements */
+        .port { position: absolute; width: 10px; height: 10px; background-color: var(--bg-primary); border: 2px solid var(--text-secondary); border-radius: 50%; z-index: 10; cursor: crosshair; transition: transform 0.15s ease, background-color 0.15s ease; }
+        .port:hover, .port.magnetic-active { background-color: var(--accent-green); border-color: var(--accent-green); z-index: 100; }
+        .port-top { top: -5px; left: 50%; transform: translateX(-50%); }
+        .port-right { right: -5px; top: 50%; transform: translateY(-50%); }
+        .port-bottom { bottom: -5px; left: 50%; transform: translateX(-50%); }
+        .port-left { left: -5px; top: 50%; transform: translateY(-50%); }
+        .port-top:hover, .port-top.magnetic-active { transform: translateX(-50%) scale(1.5); }
+        .port-right:hover, .port-right.magnetic-active { transform: translateY(-50%) scale(1.5); }
+        .port-bottom:hover, .port-bottom.magnetic-active { transform: translateX(-50%) scale(1.5); }
+        .port-left:hover, .port-left.magnetic-active { transform: translateY(-50%) scale(1.5); }
+
+        /* Floating Context Properties Panel */
+        .floating-prop-panel { 
+            position: absolute; 
+            background-color: rgba(17, 17, 21, 0.98); 
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color); 
+            border-radius: 12px;
+            width: 360px; 
+            z-index: 2000; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            display: flex; 
+            flex-direction: column; 
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            transform: scale(0.95);
+        }
+        .floating-prop-panel.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+        }
+        .floating-prop-header { padding: 14px 18px; border-bottom: 1px solid var(--border-color); font-size: 0.85rem; font-weight: 700; color: #fff; display: flex; justify-content: space-between; align-items: center; cursor: move; background: rgba(255,255,255,0.03); border-radius: 12px 12px 0 0; }
+        .properties-scroll-zone { max-height: 480px; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 16px; }
+        
+        .prop-group { display: flex; flex-direction: column; gap: 6px; }
+        .prop-group label { font-size: 0.7rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.03em; }
+        .prop-input, .prop-select { background-color: var(--bg-tertiary); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px 10px; border-radius: 6px; font-family: inherit; font-size: 0.85rem; outline: none; width: 100%; }
+        .prop-input:focus, .prop-select:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 2px rgba(37,99,235,0.2); }
+
+        .field-editor-row { display: grid; grid-template-columns: 1fr 1fr 1fr 32px; gap: 6px; align-items: center; width: 100%; }
+        .field-editor-row .prop-input { padding: 6px 8px; font-size: 0.75rem; }
+
+        /* Node Fields Rendering Styles */
+        .node-fields-container {
+            margin-top: 10px;
+            border-top: 1px solid rgba(255,255,255,0.15);
+            padding-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .node-field-row {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .node-field-type-icon { font-size: 0.65rem; color: var(--accent-blue); opacity: 0.7; width: 14px; text-align: center; }
+        .node-field-name { color: #fff; font-weight: 600; }
+        .node-field-value { color: var(--accent-orange); font-weight: 500; }
+        .btn-icon-small { background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: 4px; border-radius: 4px; }
+        .btn-icon-small:hover { color: var(--accent-red); background: rgba(220,38,38,0.1); }
+
+        /* Code Mirror Overlay Layout Box Modal */
+        .modal-shade { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.7); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s ease; }
+        .modal-shade.open { opacity: 1; pointer-events: auto; }
+        .modal-surface { background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; width: 720px; max-width: 92vw; display: flex; flex-direction: column; }
+        .modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+        .code-textarea { width: 100%; height: 350px; background-color: var(--bg-primary); border: 1px solid var(--border-color); color: #34d399; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; padding: 14px; border-radius: 6px; resize: none; outline: none; line-height: 1.4; }
+
+        .telemetry-bar { position: absolute; bottom: 16px; left: calc(var(--sidebar-width) + 16px); background-color: rgba(17,17,21,0.9); border: 1px solid var(--border-color); padding: 6px 16px; border-radius: 30px; font-size: 0.75rem; color: var(--text-secondary); display: flex; align-items: center; gap: 14px; pointer-events: none; z-index: 5; }
+
+        /* Palette Extension Styles */
+        .btn-create-item { width: 100%; margin-top: 12px; border-style: dashed; justify-content: center; }
+        .color-picker-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+        .color-option { height: 28px; border-radius: 4px; cursor: pointer; border: 2px solid transparent; }
+        .color-option.active { border-color: #fff; }
+        .template-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 10px; }
+        .template-card { 
+            background-color: var(--bg-primary); 
+            border: 1px solid var(--border-color); 
+            border-radius: 8px; 
+            padding: 16px; 
+            cursor: pointer; 
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .template-card:hover { border-color: var(--accent-orange); background-color: rgba(234,88,12,0.05); transform: translateY(-2px); }
+        .template-card h4 { font-size: 0.9rem; color: #fff; }
+        .template-card p { font-size: 0.75rem; color: var(--text-secondary); line-height: 1.4; }
+        .template-tag { font-size: 0.65rem; background: rgba(234,88,12,0.15); color: #fb923c; padding: 2px 6px; border-radius: 4px; align-self: flex-start; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-section">
+            <i class="fa-solid fa-vector-square"></i>
+            <h1>DDD Modeler Studio</h1>
+            <span>v2.0-Strategic</span>
+        </div>
+        <div class="action-toolbar">
+            <select id="theme-selector" class="prop-select" style="width: 140px;">
+                <option value="default">Pro Dark</option>
+                <option value="light">Paper Light</option>
+                <option value="cyberpunk">Cyberpunk</option>
+                <option value="forest">Forest Mode</option>
+                <option value="vsc-dark">VSCode Dark</option>
+                <option value="vsc-light">VSCode Light</option>
+            </select>
+            <button class="btn" id="btn-open-templates" style="background: rgba(234,88,12,0.1); border-color: var(--accent-orange); color: #fb923c;"><i class="fa-solid fa-lightbulb"></i> Industry Templates</button>
+            <button class="btn" id="btn-open-code"><i class="fa-solid fa-code"></i> Sync Topology Code</button>
+            <button class="btn" id="btn-save-svg"><i class="fa-solid fa-image"></i> Save SVG</button>
+            <button class="btn" id="btn-save-gif" style="background-color: rgba(37,99,235,0.1); border-color: var(--accent-blue);"><i class="fa-solid fa-film"></i> Save Animated GIF</button>
+            <button class="btn btn-primary" id="btn-clear-canvas"><i class="fa-solid fa-trash-can"></i> Reset Canvas</button>
+        </div>
+    </header>
+
+    <div class="app-container">
+        
+        <aside class="sidebar-left">
+            <nav class="tab-nav-strip">
+                <button class="tab-btn active" data-target="pane-actors"><i class="fa-solid fa-map"></i> Strategic</button>
+                <button class="tab-btn" data-target="pane-components"><i class="fa-solid fa-microchip"></i> Tactical</button>
+                <button class="tab-btn" data-target="pane-nodes"><i class="fa-solid fa-bolt"></i> Behavioral</button>
+            </nav>
+            <nav class="tab-nav-strip" style="border-top: none;">
+                <button class="tab-btn" data-target="pane-infrastructure"><i class="fa-solid fa-server"></i> Infrastructure</button>
+                <button class="tab-btn" data-target="pane-custom"><i class="fa-solid fa-wand-magic-sparkles"></i> Custom</button>
+            </nav>
+
+            <div class="palette-viewport active" id="pane-actors">
+                <div class="category-accordion">
+                    <div class="category-accordion-title">Context & Subdomains</div>
+                    <div class="palette-grid" id="grid-actors">
+                        <div class="palette-item" draggable="true" data-type="actor-home" data-icon="fa-vector-square" data-label="Bounded Context">
+                            <i class="fa-solid fa-vector-square" style="color: var(--accent-purple);"></i>
+                            <span>Bounded Context</span>
+                        </div>
+                        <div class="palette-item" draggable="true" data-type="actor-home" data-icon="fa-star" data-label="Core Subdomain">
+                            <i class="fa-solid fa-star" style="color: #d97706;"></i>
+                            <span>Core Subdomain</span>
+                        </div>
+                        <div class="palette-item" draggable="true" data-type="actor-home" data-icon="fa-puzzle-piece" data-label="Supporting Subdomain">
+                            <i class="fa-solid fa-puzzle-piece" style="color: #3b82f6;"></i>
+                            <span>Supporting Sub</span>
+                        </div>
+                        <div class="palette-item" draggable="true" data-type="actor-home" data-icon="fa-gears" data-label="Generic Subdomain">
+                            <i class="fa-solid fa-gears" style="color: #64748b;"></i>
+                            <span>Generic Sub</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="category-accordion">
+                    <div class="category-accordion-title">External & Legacy</div>
+                    <div class="palette-grid">
+                        <div class="palette-item" draggable="true" data-type="actor-home" data-icon="fa-cloud" data-label="External System">
+                            <i class="fa-solid fa-cloud" style="color: #0ea5e9;"></i>
+                            <span>Ext System</span>
+                        </div>
+                        <div class="palette-item" draggable="true" data-type="actor-home" data-icon="fa-poo" data-label="Big Ball of Mud">
+                            <i class="fa-solid fa-poo" style="color: #78350f;"></i>
+                            <span>Legacy / Mud</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-create-item" data-type="actor-home" style="margin-top:16px;"><i class="fa-solid fa-plus"></i> Create Boundary</button>
+                </div>
+            </div>
+
+            <div class="palette-viewport" id="pane-components">
+                <div class="category-accordion">
+                    <div class="category-accordion-title">Core Tactical Patterns</div>
+                    <div class="palette-grid" id="grid-messaging">
+                        <div class="palette-item" draggable="true" data-type="component" data-icon="fa-crown" data-label="Aggregate Root">
+                            <i class="fa-solid fa-crown" style="color: #d97706;"></i>
+                            <span>Aggregate Root</span>
+                        </div>
+                        <div class="palette-item" draggable="true" data-type="component" data-icon="fa-identity-card" data-label="Entity">
+                            <i class="fa-solid fa-identity-card" style="color: #60a5fa;"></i>
+                            <span>Entity</span>
+                        </div>
+                        <div class="palette-item" draggable="true" data-type="component" data-icon="fa-gem" data-label="Value Object">
+                            <i class="fa-solid fa-gem" style="color: #22d3ee;"></i>
+                            <span>Value Object</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="category-accordion">
+                    <div class="category-accordion-title">Logic & Creation</div>
+                    <div class="palette-grid" id="grid-databases">
+                        <div class="palette-item" draggable="true" data-type="component" data-icon="fa-cogs" data-label="Domain Service">
+                            <i class="fa-solid fa-cogs" style="color: #2dd4bf;"></i>
+                            <span>Domain Service</span>
+                        </div>
+                        <div class="palette-item" draggable="true" data-type="component" data-icon="fa-industry" data-label="Factory">
+                            <i class="fa-solid fa-industry" style="color: #8b5cf6;"></i>
+                            <span>Factory</span>
+                        </div>
+                        <div class="palette-item" draggable="true" data-type="component" data-icon="fa-file-signature" data-label="Specification">
+                            <i class="fa-solid fa-file-signature" style="color: #f43f5e;"></i>
+                            <span>Specification</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="category-accordion">
+                    <div class="category-accordion-title">Services & Infrastructure</div>
+                    <div class="palette-grid" id="grid-apis">
+                        <div class="palette-item" draggable="true" data-type="component" data-icon="fa-sitemap" data-label="Application Service">
+                            <i class="fa-solid fa-sitemap" style="color: #10b981;"></i>
+                            <span>App Service</span>
+                        </div>
+                        <div class="palette-item" draggable="true" data-type="component" data-icon="fa-archive" data-label="Repository">
+                            <i class="fa-solid fa-archive" style="color: #a8a29e;"></i>
+                            <span>Repository</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-create-item" data-type="component" style="margin-top:16px;"><i class="fa-solid fa-plus"></i> Create Component</button>
+                </div>
+            </div>
+
+            <div class="palette-viewport" id="pane-nodes">
+                <div class="category-accordion">
+                    <div class="category-accordion-title">Commands & Queries</div>
+                    <div class="palette-grid" id="grid-decision">
+                        <div class="palette-item" draggable="true" data-type="node" data-icon="fa-hand-pointer" data-label="Command">
+                            <i class="fa-solid fa-hand-pointer" style="color: #3b82f6;"></i>
+                            <span>Command</span>
+                        </div>
+                        <div class="palette-item" draggable="true" data-type="node" data-icon="fa-magnifying-glass" data-label="Query">
+                            <i class="fa-solid fa-magnifying-glass" style="color: #8b5cf6;"></i>
+                            <span>Query</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="category-accordion">
+                    <div class="category-accordion-title">Events & Projections</div>
+                    <div class="palette-grid" id="grid-compute">
+                        <div class="palette-item" draggable="true" data-type="node" data-icon="fa-bolt" data-label="Domain Event">
+                            <i class="fa-solid fa-bolt" style="color: #f97316;"></i>
+                            <span>Domain Event</span>
+                        </div>
+                        <div class="palette-item" draggable="true" data-type="node" data-icon="fa-display" data-label="Read Model">
+                            <i class="fa-solid fa-display" style="color: #ec4899;"></i>
+                            <span>Read Model</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="category-accordion">
+                    <div class="category-accordion-title">Process Orchestration</div>
+                    <div class="palette-grid" id="grid-flow-control">
+                        <div class="palette-item" draggable="true" data-type="node" data-icon="fa-clipboard-list" data-label="Policy">
+                            <i class="fa-solid fa-clipboard-list" style="color: #22c55e;"></i>
+                            <span>Policy Rule</span>
+                        </div>
+                        <div class="palette-item" draggable="true" data-type="node" data-icon="fa-diagram-next" data-label="Process Manager">
+                            <i class="fa-solid fa-diagram-next" style="color: #059669;"></i>
+                            <span>Saga / PM</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-create-item" data-type="node" style="margin-top:16px;"><i class="fa-solid fa-plus"></i> Create Node</button>
+                </div>
+            </div>
+
+            <div class="palette-viewport" id="pane-infrastructure">
+                <div class="category-accordion">
+                    <div class="category-accordion-title">Messaging & Event Bus</div>
+                    <div class="palette-grid">
+                        <div class="palette-item" draggable="true" data-type="node" data-icon="fa-code-fork" data-label="Apache Kafka">
+                            <i class="fa-solid fa-code-fork" style="color: #f43f5e;"></i>
+                            <span>Kafka</span>
+                        </div>
+                        <div class="palette-item" draggable="true" data-type="node" data-icon="fa-circle-nodes" data-label="RabbitMQ">
+                            <i class="fa-solid fa-circle-nodes" style="color: #f97316;"></i>
+                            <span>RabbitMQ</span>
+                        </div>
+                        <div class="palette-item" draggable="true" data-type="node" data-icon="fa-vial" data-label="Solace PubSub+">
+                            <i class="fa-solid fa-vial" style="color: #3b82f6;"></i>
+                            <span>Solace</span>
+                        </div>
+                        <div class="palette-item" draggable="true" data-type="node" data-icon="fa-layer-group" data-label="IBM MQ">
+                            <i class="fa-solid fa-layer-group" style="color: #1e3a8a;"></i>
+                            <span>IBM MQ</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="category-accordion">
+                    <div class="category-accordion-title">Persistence & Storage</div>
+                    <div class="palette-grid">
+                        <div class="palette-item" draggable="true" data-type="component" data-icon="fa-leaf" data-label="MongoDB">
+                            <i class="fa-solid fa-leaf" style="color: #10b981;"></i>
+                            <span>MongoDB</span>
+                        </div>
+                        <div class="palette-item" draggable="true" data-type="component" data-icon="fa-database" data-label="PostgreSQL">
+                            <i class="fa-solid fa-database" style="color: #336791;"></i>
+                            <span>Postgres</span>
+                        </div>
+                        <div class="palette-item" draggable="true" data-type="component" data-icon="fa-database" data-label="MySQL">
+                            <i class="fa-solid fa-database" style="color: #00758f;"></i>
+                            <span>MySQL</span>
+                        </div>
+                        <div class="palette-item" draggable="true" data-type="component" data-icon="fa-bolt" data-label="Redis">
+                            <i class="fa-solid fa-bolt" style="color: #dc2626;"></i>
+                            <span>Redis</span>
+                        </div>
+                        <div class="palette-item" draggable="true" data-type="component" data-icon="fa-table-cells" data-label="Cassandra">
+                            <i class="fa-solid fa-table-cells" style="color: #1287b1;"></i>
+                            <span>Cassandra</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="category-accordion">
+                    <div class="category-accordion-title">Networking & Edge</div>
+                    <div class="palette-grid">
+                        <div class="palette-item" draggable="true" data-type="node" data-icon="fa-cloud-arrow-up" data-label="API Gateway">
+                            <i class="fa-solid fa-cloud-arrow-up" style="color: #06b6d4;"></i>
+                            <span>API Gateway</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="palette-viewport" id="pane-custom">
+                <div class="category-accordion">
+                    <div class="category-accordion-title">Your Custom Components</div>
+                    <div class="palette-grid" id="grid-custom-items">
+                        <!-- Custom items will be appended here -->
+                    </div>
+                    <button class="btn btn-create-item" data-type="component" style="margin-top:16px;"><i class="fa-solid fa-plus"></i> Create Custom Element</button>
+                </div>
+            </div>
+        </aside>
+
+        <main class="canvas-viewport" id="canvas-container">
+            <div id="canvas-surface">
+                <svg id="svg-edge-layer">
+                    <defs>
+                        <marker id="arrow-forward" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 1 L 10 5 L 0 9 z" fill="#3b82f6" />
+                        </marker>
+                        <marker id="arrow-reverse" viewBox="0 0 10 10" refX="4" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 10 1 L 0 5 L 10 9 z" fill="#3b82f6" />
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+        </main>
+
+        <div class="floating-prop-panel" id="floating-prop-panel">
+            <div class="floating-prop-header" id="floating-prop-handle">
+                <span><i class="fa-solid fa-sliders"></i> Properties</span>
+                <button class="btn-icon-small" id="btn-close-props"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="properties-scroll-zone" id="prop-active-editor">
+                <div class="prop-group">
+                    <label>Unique Structural Reference ID</label>
+                    <input type="text" id="prop-id" class="prop-input" readonly style="opacity: 0.5; font-family:'JetBrains Mono';">
+                </div>
+                <div class="prop-group">
+                    <label>Display Block Label</label>
+                    <input type="text" id="prop-label" class="prop-input">
+                </div>
+
+                <div class="prop-group" id="icon-prop-block">
+                    <label>Icon Class (FontAwesome)</label>
+                    <input type="text" id="prop-icon" class="prop-input" placeholder="e.g. fa-database">
+                </div>
+
+                <div id="dimension-controls" style="display: flex; gap: 8px;">
+                    <div class="prop-group" style="flex: 1;">
+                        <label>Width (px)</label>
+                        <input type="number" id="prop-width" class="prop-input">
+                    </div>
+                    <div class="prop-group" style="flex: 1;">
+                        <label>Height (px)</label>
+                        <input type="number" id="prop-height" class="prop-input">
+                    </div>
+                </div>
+                
+                <button class="btn" id="btn-auto-fit" style="background: rgba(37,99,235,0.1); border-color: var(--accent-blue); display: none;">
+                    <i class="fa-solid fa-expand"></i> Auto-Fit To Content
+                </button>
+
+                <button class="btn" id="btn-unbind-parent" style="background: rgba(220,38,38,0.1); border-color: var(--accent-red); color: #f87171; display: none;">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Eject from Context
+                </button>
+                
+                <div id="connection-properties-block" style="display: none; border-top:1px solid var(--border-color); padding-top:14px; flex-direction:column; gap:12px;">
+                    <label style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--accent-orange);">Connection Settings</label>
+                    <div class="prop-group">
+                        <label>Custom Flow Label (Overrides Type)</label>
+                        <input type="text" id="prop-wire-label" class="prop-input" placeholder="e.g. If Status == Valid">
+                    </div>
+                    <div class="prop-group">
+                        <label>Relationship Type</label>
+                        <select id="prop-flow-dir" class="prop-select">
+                            <option value="left-to-right">Upstream (U) -> Downstream (D)</option>
+                            <option value="right-to-left">Downstream (D) <- Upstream (U)</option>
+                            <option value="acl">U [ACL] -> D (Anticorruption Layer)</option>
+                            <option value="ohs">U [OHS] -> D (Open Host Service)</option>
+                            <option value="pl">U [PL] -> D (Published Language)</option>
+                            <option value="sk">Shared Kernel (SK)</option>
+                            <option value="partnership">Partnership (P)</option>
+                            <option value="bi-directional">Customer/Supplier (Bi-Dir)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="fields-editor-block" style="display: none; border-top:1px solid var(--border-color); padding-top:14px; flex-direction:column; gap:12px;">
+                    <label style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--accent-blue);">Data Fields</label>
+                    <div id="fields-list" style="display:flex; flex-direction:column; gap:6px;"></div>
+                    <div class="field-editor-row">
+                        <input type="text" id="new-field-name" class="prop-input" placeholder="Name" style="flex:1;">
+                        <input type="text" id="new-field-type" class="prop-input" placeholder="Type" style="flex:1;">
+                        <input type="text" id="new-field-value" class="prop-input" placeholder="Value" style="flex:1;">
+                        <button class="btn btn-primary" id="btn-add-field" style="padding:4px 8px;"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                </div>
+
+                <div class="prop-group" id="node-styling-color-block">
+                    <label>Vector Boundary Color Highlight</label>
+                    <div class="color-bubble-row">
+                        <div class="color-bubble-item" style="background-color: #2563eb;" data-color="#2563eb"></div>
+                        <div class="color-bubble-item" style="background-color: #16a34a;" data-color="#16a34a"></div>
+                        <div class="color-bubble-item" style="background-color: #7c3aed;" data-color="#7c3aed"></div>
+                        <div class="color-bubble-item" style="background-color: #ea580c;" data-color="#ea580c"></div>
+                        <div class="color-bubble-item" style="background-color: #dc2626;" data-color="#dc2626"></div>
+                    </div>
+                </div>
+
+                <button class="btn" id="btn-delete-selection" style="background-color: rgba(220,38,38,0.1); border-color: var(--accent-red); color: #f87171; margin-top: 10px; justify-content: center;">
+                    <i class="fa-solid fa-trash-can"></i> Delete Selected Object
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="telemetry-bar">
+        <div style="width:6px; height:6px; background-color:var(--accent-green); border-radius:50%;"></div>
+        <span id="telemetry-zoom">Scale: 100%</span>
+        <span>|</span>
+        <span>DDD Strategic & Tactical Engine Active</span>
+        <span>|</span>
+        <span>Tip: Use Bounded Contexts to group Aggregates and Entities</span>
+    </div>
+
+    <div class="modal-shade" id="templates-modal">
+        <div class="modal-surface" style="width: 800px;">
+            <div class="modal-header">
+                <h3 style="font-size:1rem; font-weight:600;"><i class="fa-solid fa-lightbulb"></i> Load Industry DDD Patterns</h3>
+                <button class="btn" id="btn-close-templates" style="padding:4px 10px;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4;">
+                    Select a pre-configured Domain Driven Design blueprint to jumpstart your strategic modeling. These samples showcase complex Bounded Context mappings and animated event flows.
+                </p>
+                <div class="template-grid">
+                    <div class="template-card" data-template="ecommerce">
+                        <div class="template-tag">Microservices</div>
+                        <h4>Global E-Commerce & Logistics</h4>
+                        <p>Complex flow between Checkout, Payment Gateway, and Warehouse with automated stock replenishment events.</p>
+                    </div>
+                    <div class="template-card" data-template="fintech">
+                        <div class="template-tag">FinTech</div>
+                        <h4>Real-time Trading & Risk</h4>
+                        <p>High-velocity event streaming between Market Data Feeds, Risk Engines, and Multi-currency Ledgers.</p>
+                    </div>
+                    <div class="template-card" data-template="healthcare">
+                        <div class="template-tag">SaaS</div>
+                        <h4>Patient Journey & Telehealth</h4>
+                        <p>Cross-context modeling of patient bookings, clinical records, and automated insurance claim submissions.</p>
+                    </div>
+                    <div class="template-card" data-template="ordering">
+                        <div class="template-tag">Core DDD</div>
+                        <h4>Basic Ordering & Shipping</h4>
+                        <p>The classic DDD starter: Order aggregates emitting events to trigger downstream shipping processes.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-shade" id="code-sync-modal">
+        <div class="modal-surface">
+            <div class="modal-header">
+                <h3 style="font-size:1rem; font-weight:600;"><i class="fa-solid fa-code"></i> DDD Architecture State Specification Schema</h3>
+                <button class="btn" id="btn-close-modal" style="padding:4px 10px;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4;">
+                    This declarative state code configuration defines structural boundaries, tactical patterns, domain models, and the context mapping matrices of your DDD architecture.
+                </p>
+                <textarea class="code-textarea" id="serialization-textarea-box"></textarea>
+                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px;">
+                    <button class="btn" id="btn-copy-code"><i class="fa-solid fa-copy"></i> Copy To Clipboard</button>
+                    <button class="btn btn-primary" id="btn-apply-code"><i class="fa-solid fa-wand-magic-sparkles"></i> Hot-Reload DDD Architecture</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-shade" id="create-item-modal">
+        <div class="modal-surface" style="width: 400px;">
+            <div class="modal-header">
+                <h3 style="font-size:1rem; font-weight:600;"><i class="fa-solid fa-plus-circle"></i> Create Custom DDD Element</h3>
+                <button class="btn" id="btn-close-create-modal" style="padding:4px 10px;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="prop-group">
+                    <label>Display Label Name</label>
+                    <input type="text" id="create-item-label" class="prop-input" placeholder="e.g. Domain Event">
+                </div>
+                <div class="prop-group">
+                    <label>FontAwesome Icon Class</label>
+                    <input type="text" id="create-item-icon" class="prop-input" value="fa-microchip">
+                </div>
+                <div class="prop-group">
+                    <label>Theme Color Highlight</label>
+                    <div class="color-picker-row" id="create-item-color-row">
+                        <div class="color-option" style="background-color: #2563eb;" data-color="#2563eb"></div>
+                        <div class="color-option" style="background-color: #16a34a;" data-color="#16a34a"></div>
+                        <div class="color-option" style="background-color: #7c3aed;" data-color="#7c3aed"></div>
+                        <div class="color-option" style="background-color: #ea580c;" data-color="#ea580c"></div>
+                        <div class="color-option" style="background-color: #dc2626;" data-color="#dc2626"></div>
+                        <div class="color-option" style="background-color: #f43f5e;" data-color="#f43f5e"></div>
+                        <div class="color-option" style="background-color: #38bdf8;" data-color="#38bdf8"></div>
+                        <div class="color-option" style="background-color: #10b981;" data-color="#10b981"></div>
+                        <div class="color-option" style="background-color: #f59e0b;" data-color="#f59e0b"></div>
+                        <div class="color-option" style="background-color: #6366f1;" data-color="#6366f1"></div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" id="btn-save-new-item" style="margin-top: 10px; justify-content: center;">
+                    <i class="fa-solid fa-check"></i> Add To Palette
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Complex Tree Structure Serialization Model Global Memory Mapping Instance Setup
+        const systemState = {
+            nodes: [
+                { id: "bc_ordering", type: "actor-home", label: "Ordering Bounded Context", icon: "fa-vector-square", x: 60, y: 140, color: "#7c3aed", isContainer: true, fields: [] },
+                { id: "agg_order", type: "component", label: "Order Aggregate", icon: "fa-crown", x: 100, y: 220, color: "#d97706", parentContainerId: "bc_ordering", fields: [{name: "id", type: "UUID", value: "ORD-101"}, {name: "status", type: "String", value: "PENDING"}] },
+                { id: "bc_shipping", type: "actor-home", label: "Shipping Bounded Context", icon: "fa-vector-square", x: 580, y: 140, color: "#7c3aed", isContainer: true, fields: [] },
+                { id: "agg_shipment", type: "component", label: "Shipment Aggregate", icon: "fa-crown", x: 620, y: 220, color: "#d97706", parentContainerId: "bc_shipping", fields: [{name: "trackingId", type: "String", value: ""}] },
+                { id: "evt_order_placed", type: "node", label: "Order Placed Event", icon: "fa-bolt", x: 380, y: 180, color: "#f97316", parentContainerId: null, fields: [{name: "orderId", type: "UUID", value: "ORD-101"}] }
+            ],
+            connections: [
+                { id: "flow_1", from: "agg_order", fromPort: "right", to: "evt_order_placed", toPort: "left", direction: "left-to-right" },
+                { id: "flow_2", from: "evt_order_placed", fromPort: "right", to: "agg_shipment", toPort: "left", direction: "acl" }
+            ],
+            zoom: 1.0, panX: 40, panY: 30,
+            selectedId: null, selectedType: null, draggedItemData: null, activeRoutingSource: null,
+            activeCreateType: null, activeCreateColor: '#2563eb',
+            customPaletteItems: [],
+            activeTheme: 'default'
+        };
+
+        // Persistence Engine Implementation
+        function saveState() {
+            const stateToSave = {
+                nodes: systemState.nodes,
+                connections: systemState.connections,
+                zoom: systemState.zoom,
+                panX: systemState.panX,
+                panY: systemState.panY,
+                customPaletteItems: systemState.customPaletteItems,
+                activeTheme: systemState.activeTheme
+            };
+            localStorage.setItem('ddd_modeler_state', JSON.stringify(stateToSave));
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem('ddd_modeler_state');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    Object.assign(systemState, data);
+                    
+                    // Restore Theme
+                    const themeSelector = document.getElementById('theme-selector');
+                    if (themeSelector) {
+                        themeSelector.value = systemState.activeTheme;
+                        document.body.className = systemState.activeTheme === 'default' ? '' : `theme-${systemState.activeTheme}`;
+                    }
+
+                    // Restore Custom Palette Items
+                    const customGrid = document.getElementById('grid-custom-items');
+                    if (customGrid && systemState.customPaletteItems) {
+                        systemState.customPaletteItems.forEach(itemData => {
+                            const newItem = document.createElement('div');
+                            newItem.className = 'palette-item';
+                            newItem.draggable = true;
+                            newItem.setAttribute('data-type', itemData.type);
+                            newItem.setAttribute('data-icon', itemData.icon);
+                            newItem.setAttribute('data-label', itemData.label);
+                            newItem.innerHTML = `
+                                <i class="fa-solid ${itemData.icon}" style="color: ${itemData.color};"></i>
+                                <span>${itemData.label}</span>
+                            `;
+                            customGrid.appendChild(newItem);
+                            bindPaletteItemEvents(newItem);
+                        });
+                    }
+                } catch (err) {
+                    console.error("Failed to load state:", err);
+                }
+            }
+        }
+
+        // Complete DOM Tree Interface Objects Reference Mapping List Registry
+        const canvasContainer = document.getElementById('canvas-container');
+        const canvasSurface = document.getElementById('canvas-surface');
+        const svgEdgeLayer = document.getElementById('svg-edge-layer');
+        const zoomTextDOM = document.getElementById('telemetry-zoom');
+        const propPaneEmptyState = document.getElementById('prop-empty-state');
+        const propPaneActiveEditor = document.getElementById('prop-active-editor');
+        const propFieldId = document.getElementById('prop-id');
+        const propFieldLabel = document.getElementById('prop-label');
+        const propFieldFlowDirection = document.getElementById('prop-flow-dir');
+        const flowPropsBlock = document.getElementById('connection-properties-block');
+        const nodeStylingColorBlock = document.getElementById('node-styling-color-block');
+
+        // Industry Standard DDD Templates Catalog
+        const INDUSTRY_TEMPLATES = {
+            ecommerce: {
+                nodes: [
+                    { id: "bc_checkout", type: "actor-home", label: "Checkout Bounded Context", icon: "fa-vector-square", x: 40, y: 100, color: "#7c3aed", isContainer: true, fields: [] },
+                    { id: "agg_cart", type: "component", label: "Shopping Cart Aggregate", icon: "fa-crown", x: 80, y: 180, color: "#d97706", parentContainerId: "bc_checkout", fields: [] },
+                    { id: "bc_payment", type: "actor-home", label: "Payment Gateway Context", icon: "fa-star", x: 480, y: 50, color: "#d97706", isContainer: true, fields: [] },
+                    { id: "bc_warehouse", type: "actor-home", label: "Warehouse & Logistics", icon: "fa-vector-square", x: 480, y: 280, color: "#7c3aed", isContainer: true, fields: [] },
+                    { id: "evt_payment_success", type: "node", label: "Payment Authorized", icon: "fa-bolt", x: 340, y: 80, color: "#f97316", parentContainerId: null, fields: [] },
+                    { id: "evt_stock_reserved", type: "node", label: "Stock Reserved", icon: "fa-bolt", x: 340, y: 320, color: "#f97316", parentContainerId: null, fields: [] },
+                    { id: "agg_shipment", type: "component", label: "Shipment Aggregate", icon: "fa-crown", x: 520, y: 360, color: "#d97706", parentContainerId: "bc_warehouse", fields: [] }
+                ],
+                connections: [
+                    { id: "e1", from: "agg_cart", fromPort: "right", to: "evt_payment_success", toPort: "left", direction: "left-to-right" },
+                    { id: "e2", from: "evt_payment_success", fromPort: "right", to: "bc_payment", toPort: "left", direction: "ohs" },
+                    { id: "e3", from: "bc_payment", fromPort: "bottom", to: "evt_stock_reserved", toPort: "top", direction: "left-to-right" },
+                    { id: "e4", from: "evt_stock_reserved", fromPort: "right", to: "agg_shipment", toPort: "left", direction: "acl" }
+                ]
+            },
+            fintech: {
+                nodes: [
+                    { id: "bc_market", type: "actor-home", label: "Market Data Feed (Generic)", icon: "fa-gears", x: 40, y: 140, color: "#a1a1aa", isContainer: true, fields: [] },
+                    { id: "bc_trading", type: "actor-home", label: "Order Matching Engine (Core)", icon: "fa-star", x: 420, y: 100, color: "#d97706", isContainer: true, fields: [] },
+                    { id: "bc_ledger", type: "actor-home", label: "Immutable Ledger Context", icon: "fa-vector-square", x: 800, y: 140, color: "#7c3aed", isContainer: true, fields: [] },
+                    { id: "evt_tick", type: "node", label: "Market Tick Event", icon: "fa-bolt", x: 280, y: 180, color: "#f97316", parentContainerId: null, fields: [] },
+                    { id: "evt_match", type: "node", label: "Trade Matched Event", icon: "fa-bolt", x: 680, y: 180, color: "#f97316", parentContainerId: null, fields: [] },
+                    { id: "agg_orderbook", type: "component", label: "Order Book Aggregate", icon: "fa-crown", x: 460, y: 180, color: "#d97706", parentContainerId: "bc_trading", fields: [] }
+                ],
+                connections: [
+                    { id: "f1", from: "bc_market", fromPort: "right", to: "evt_tick", toPort: "left", direction: "pl" },
+                    { id: "f2", from: "evt_tick", fromPort: "right", to: "agg_orderbook", toPort: "left", direction: "left-to-right" },
+                    { id: "f3", from: "agg_orderbook", fromPort: "right", to: "evt_match", toPort: "left", direction: "left-to-right" },
+                    { id: "f4", from: "evt_match", fromPort: "right", to: "bc_ledger", toPort: "left", direction: "acl" }
+                ]
+            },
+            healthcare: {
+                nodes: [
+                    { id: "bc_portal", type: "actor-home", label: "Patient Portal Context", icon: "fa-vector-square", x: 40, y: 140, color: "#7c3aed", isContainer: true, fields: [] },
+                    { id: "bc_emr", type: "actor-home", label: "Clinical Records (EMR)", icon: "fa-star", x: 480, y: 140, color: "#d97706", isContainer: true, fields: [] },
+                    { id: "bc_billing", type: "actor-home", label: "Insurance & Billing", icon: "fa-puzzle-piece", x: 920, y: 140, color: "#3b82f6", isContainer: true, fields: [] },
+                    { id: "evt_booking", type: "node", label: "Appointment Booked", icon: "fa-bolt", x: 340, y: 180, color: "#f97316", parentContainerId: null, fields: [] },
+                    { id: "evt_claim", type: "node", label: "Claim Submitted", icon: "fa-bolt", x: 780, y: 180, color: "#f97316", parentContainerId: null, fields: [] }
+                ],
+                connections: [
+                    { id: "h1", from: "bc_portal", fromPort: "right", to: "evt_booking", toPort: "left", direction: "left-to-right" },
+                    { id: "h2", from: "evt_booking", fromPort: "right", to: "bc_emr", toPort: "left", direction: "ohs" },
+                    { id: "h3", from: "bc_emr", fromPort: "right", to: "evt_claim", toPort: "left", direction: "left-to-right" },
+                    { id: "h4", from: "evt_claim", fromPort: "right", to: "bc_billing", toPort: "left", direction: "partnership" }
+                ]
+            },
+            ordering: {
+                nodes: [
+                    { id: "bc_ordering", type: "actor-home", label: "Ordering Bounded Context", icon: "fa-vector-square", x: 60, y: 140, color: "#7c3aed", isContainer: true, fields: [] },
+                    { id: "agg_order", type: "component", label: "Order Aggregate", icon: "fa-crown", x: 100, y: 220, color: "#d97706", parentContainerId: "bc_ordering", fields: [] },
+                    { id: "bc_shipping", type: "actor-home", label: "Shipping Bounded Context", icon: "fa-vector-square", x: 580, y: 140, color: "#7c3aed", isContainer: true, fields: [] },
+                    { id: "agg_shipment", type: "component", label: "Shipment Aggregate", icon: "fa-crown", x: 620, y: 220, color: "#d97706", parentContainerId: "bc_shipping", fields: [] },
+                    { id: "evt_order_placed", type: "node", label: "Order Placed Event", icon: "fa-bolt", x: 380, y: 180, color: "#f97316", parentContainerId: null, fields: [] }
+                ],
+                connections: [
+                    { id: "flow_1", from: "agg_order", fromPort: "right", to: "evt_order_placed", toPort: "left", direction: "left-to-right" },
+                    { id: "flow_2", from: "evt_order_placed", fromPort: "right", to: "agg_shipment", toPort: "left", direction: "acl" }
+                ]
+            }
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initLeftDrawerTabStripSelectors();
+            initInfiniteViewportZoomAndPanEngine();
+            initDragAndDropIntersectionContainers();
+            initPaletteExtensionEngine();
+            initPropertiesEditorFormBindings();
+            initDataSynchronizationModalsEngine();
+            initIndustryTemplatesEngine();
+            initThemeEngine();
+            
+            // Make Properties Panel Draggable
+            const propPanel = document.getElementById('floating-prop-panel');
+            const propHandle = document.getElementById('floating-prop-handle');
+            makeDraggable(propPanel, propHandle);
+
+            renderSubsystemsTopologyCanvas();
+        });
+
+        function makeDraggable(element, handle) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            handle.onmousedown = dragMouseDown;
+
+            function dragMouseDown(e) {
+                e = e || window.event;
+                e.preventDefault();
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+            }
+
+            function elementDrag(e) {
+                e = e || window.event;
+                e.preventDefault();
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                element.style.top = (element.offsetTop - pos2) + "px";
+                element.style.left = (element.offsetLeft - pos1) + "px";
+                element.style.right = 'auto'; // Disable right-anchor once dragged
+            }
+
+            function closeDragElement() {
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
+        }
+
+        function initThemeEngine() {
+            const selector = document.getElementById('theme-selector');
+            selector.addEventListener('change', () => {
+                document.body.className = selector.value === 'default' ? '' : `theme-${selector.value}`;
+            });
+        }
+
+        function initIndustryTemplatesEngine() {
+            const modal = document.getElementById('templates-modal');
+            const openBtn = document.getElementById('btn-open-templates');
+            const closeBtn = document.getElementById('btn-close-templates');
+            const cards = document.querySelectorAll('.template-card');
+
+            openBtn.addEventListener('click', () => modal.classList.add('open'));
+            closeBtn.addEventListener('click', () => modal.classList.remove('open'));
+
+            cards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const templateKey = card.getAttribute('data-template');
+                    const template = INDUSTRY_TEMPLATES[templateKey];
+                    if (template) {
+                        if (confirm(`Load "${card.querySelector('h4').textContent}" template? Current progress will be replaced.`)) {
+                            systemState.nodes = JSON.parse(JSON.stringify(template.nodes));
+                            systemState.connections = JSON.parse(JSON.stringify(template.connections));
+                            systemState.selectedId = null;
+                            systemState.panX = 40; systemState.panY = 30; systemState.zoom = 1.0;
+                            renderSubsystemsTopologyCanvas();
+                            applyCanvasMatrixTransformations();
+                            modal.classList.remove('open');
+                        }
+                    }
+                });
+            });
+        }
+
+        function initLeftDrawerTabStripSelectors() {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.palette-viewport').forEach(p => p.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById(btn.getAttribute('data-target')).classList.add('active');
+                });
+            });
+        }
+
+        // Palette Item Drag Binding Helper
+        function bindPaletteItemEvents(item) {
+            item.addEventListener('dragstart', () => {
+                systemState.draggedItemData = {
+                    type: item.getAttribute('data-type'),
+                    icon: item.getAttribute('data-icon'),
+                    label: item.getAttribute('data-label'),
+                    color: item.querySelector('i').style.color
+                };
+            });
+        }
+
+        function initPaletteExtensionEngine() {
+            const createModal = document.getElementById('create-item-modal');
+            const closeBtn = document.getElementById('btn-close-create-modal');
+            const saveBtn = document.getElementById('btn-save-new-item');
+            const labelInput = document.getElementById('create-item-label');
+            const iconInput = document.getElementById('create-item-icon');
+            const colorOptions = document.querySelectorAll('.color-option');
+
+            document.querySelectorAll('.btn-create-item').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    systemState.activeCreateType = btn.getAttribute('data-type');
+                    labelInput.value = '';
+                    createModal.classList.add('open');
+                });
+            });
+
+            closeBtn.addEventListener('click', () => createModal.classList.remove('open'));
+
+            colorOptions.forEach(opt => {
+                opt.addEventListener('click', () => {
+                    colorOptions.forEach(o => o.classList.remove('active'));
+                    opt.classList.add('active');
+                    systemState.activeCreateColor = opt.getAttribute('data-color');
+                });
+            });
+
+            saveBtn.addEventListener('click', () => {
+                const label = labelInput.value.trim();
+                const icon = iconInput.value.trim() || 'fa-microchip';
+                if(!label) return alert("Please provide a display label.");
+
+                const newItem = document.createElement('div');
+                newItem.className = 'palette-item';
+                newItem.draggable = true;
+                newItem.setAttribute('data-type', systemState.activeCreateType);
+                newItem.setAttribute('data-icon', icon);
+                newItem.setAttribute('data-label', label);
+                
+                newItem.innerHTML = `
+                    <i class="fa-solid ${icon}" style="color: ${systemState.activeCreateColor};"></i>
+                    <span>${label}</span>
+                `;
+
+                // Add to the Custom Grid
+                const customGrid = document.getElementById('grid-custom-items');
+                customGrid.appendChild(newItem);
+                bindPaletteItemEvents(newItem);
+                
+                // Switch to Custom Tab automatically
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.palette-viewport').forEach(p => p.classList.remove('active'));
+                const customTabBtn = document.querySelector('[data-target="pane-custom"]');
+                if(customTabBtn) customTabBtn.classList.add('active');
+                document.getElementById('pane-custom').classList.add('active');
+
+                createModal.classList.remove('open');
+            });
+        }
+
+        function initInfiniteViewportZoomAndPanEngine() {
+            applyCanvasMatrixTransformations();
+
+            canvasContainer.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const transformFactor = 0.05;
+                const prevZoom = systemState.zoom;
+                
+                if(e.deltaY < 0) systemState.zoom = Math.min(systemState.zoom + transformFactor, 2.0);
+                else systemState.zoom = Math.max(systemState.zoom - transformFactor, 0.4);
+
+                // Zoom to mouse position logic
+                const rect = canvasContainer.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+
+                const mouseXInCanvas = (mouseX - systemState.panX) / prevZoom;
+                const mouseYInCanvas = (mouseY - systemState.panY) / prevZoom;
+
+                systemState.panX = mouseX - mouseXInCanvas * systemState.zoom;
+                systemState.panY = mouseY - mouseYInCanvas * systemState.zoom;
+
+                applyCanvasMatrixTransformations();
+            }, { passive: false });
+
+            let activeCanvasDrag = false, startCanvasMouseX, startCanvasMouseY;
+            canvasContainer.addEventListener('mousedown', (e) => {
+                if(e.target === canvasContainer || e.target === canvasSurface || e.target === svgEdgeLayer) {
+                    activeCanvasDrag = true;
+                    canvasContainer.style.cursor = 'grabbing';
+                    startCanvasMouseX = e.clientX - systemState.panX;
+                    startCanvasMouseY = e.clientY - systemState.panY;
+                }
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if(!activeCanvasDrag) return;
+                systemState.panX = e.clientX - startCanvasMouseX;
+                systemState.panY = e.clientY - startCanvasMouseY;
+                applyCanvasMatrixTransformations();
+            });
+
+            window.addEventListener('mouseup', () => { if(activeCanvasDrag) { activeCanvasDrag = false; canvasContainer.style.cursor = 'grab'; } });
+        }
+
+        function applyCanvasMatrixTransformations() {
+            canvasSurface.style.transform = `translate(${systemState.panX}px, ${systemState.panY}px) scale(${systemState.zoom})`;
+            zoomTextDOM.textContent = `Scale: ${Math.round(systemState.zoom * 100)}%`;
+            
+            // Adjust grid background to follow pan/zoom
+            canvasContainer.style.backgroundPosition = `${systemState.panX}px ${systemState.panY}px`;
+            const gridScale = 20 * systemState.zoom;
+            const majorGridScale = 100 * systemState.zoom;
+            canvasContainer.style.backgroundSize = `${majorGridScale}px ${majorGridScale}px, ${gridScale}px ${gridScale}px, ${gridScale}px ${gridScale}px`;
+        }
+
+        // Left Component Drawer Drag Event Drop Catch Handler Sub-block
+        function initDragAndDropIntersectionContainers() {
+            document.querySelectorAll('.palette-item').forEach(item => {
+                bindPaletteItemEvents(item);
+            });
+
+            canvasContainer.addEventListener('dragover', (e) => e.preventDefault());
+            canvasContainer.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if(!systemState.draggedItemData) return;
+
+                const rect = canvasContainer.getBoundingClientRect();
+                const dropCanvasCoordinatesX = (e.clientX - rect.left - systemState.panX) / systemState.zoom;
+                const dropCanvasCoordinatesY = (e.clientY - rect.top - systemState.panY) / systemState.zoom;
+
+                const runtimeElementId = "element_" + Date.now().toString().slice(-5);
+                
+                // Grid snapping for drop
+                let snappedX = Math.round(dropCanvasCoordinatesX / 10) * 10;
+                let snappedY = Math.round(dropCanvasCoordinatesY / 10) * 10;
+
+                // Establish Runtime Spatial Intersection Coordinates Validation Checks Matrix Rule
+                let calculatedParentId = null;
+                if(systemState.draggedItemData.type !== 'actor-home') {
+                    const intersectedContainerObject = systemState.nodes.find(n => n.isContainer && 
+                        snappedX >= n.x && snappedX <= (n.x + (n.width || 480)) &&
+                        snappedY >= n.y && snappedY <= (n.y + (n.height || 320))
+                    );
+                    if(intersectedContainerObject) calculatedParentId = intersectedContainerObject.id;
+                }
+
+                const generatedNodeRecord = {
+                    id: runtimeElementId,
+                    type: systemState.draggedItemData.type,
+                    label: systemState.draggedItemData.label,
+                    icon: systemState.draggedItemData.icon,
+                    x: snappedX - 60,
+                    y: snappedY - 30,
+                    color: systemState.draggedItemData.color || (systemState.draggedItemData.type === 'actor-home' ? '#7c3aed' : '#2563eb'),
+                    isContainer: systemState.draggedItemData.type === 'actor-home',
+                    parentContainerId: calculatedParentId
+                };
+
+                systemState.nodes.push(generatedNodeRecord);
+                systemState.draggedItemData = null;
+                systemState.selectedId = runtimeElementId;
+                systemState.selectedType = 'node';
+                renderSubsystemsTopologyCanvas();
+            });
+        }
+
+        // Core Layout Generator System Render Loop Mechanics Controller
+        function renderSubsystemsTopologyCanvas() {
+            canvasSurface.querySelectorAll('.node').forEach(el => el.remove());
+
+            systemState.nodes.forEach(nodeData => {
+                const nodeEl = document.createElement('div');
+                nodeEl.id = nodeData.id;
+                nodeEl.className = `node ${nodeData.isContainer ? 'node-actor-container' : 'node-standard'}`;
+                if(systemState.selectedId === nodeData.id && systemState.selectedType === 'node') nodeEl.classList.add('selected');
+                
+                nodeEl.style.left = `${nodeData.x}px`;
+                nodeEl.style.top = `${nodeData.y}px`;
+                
+                // Dynamic Sizing
+                const width = nodeData.width || (nodeData.isContainer ? 480 : 140);
+                const height = nodeData.height || (nodeData.isContainer ? 320 : 65);
+                nodeEl.style.width = `${width}px`;
+                nodeEl.style.height = `${height}px`;
+                
+                if(nodeData.isContainer) nodeEl.style.borderColor = nodeData.color;
+                else nodeEl.style.borderLeft = `4px solid ${nodeData.color}`;
+
+                // Inject Functional HUD Toolbar Controls directly within structural block
+                nodeEl.innerHTML = `
+                    <div class="node-context-hud">
+                        <button class="hud-btn" title="Edit Fields Config" onclick="focusPropertyController('${nodeData.id}', 'node')"><i class="fa-solid fa-sliders"></i></button>
+                        <button class="hud-btn hud-del" title="Prune Subsystem Object" onclick="pruneTargetNodeRecord('${nodeData.id}')"><i class="fa-solid fa-trash-can"></i></button>
+                    </div>
+                    <div class="node-header-wrap">
+                        <i class="fa-solid ${nodeData.icon}" style="color: ${nodeData.color};"></i>
+                        <div class="node-text-title">${nodeData.label}</div>
+                    </div>
+                `;
+
+                // Render Data Fields if they exist
+                if (nodeData.fields && nodeData.fields.length > 0) {
+                    const fieldsContainer = document.createElement('div');
+                    fieldsContainer.className = 'node-fields-container';
+                    nodeData.fields.forEach(field => {
+                        const fieldRow = document.createElement('div');
+                        fieldRow.className = 'node-field-row';
+                        
+                        // Subtly show type as an icon (info-circle) with a tooltip
+                        let fieldHTML = `
+                            <i class="fa-solid fa-circle-info node-field-type-icon" title="Type: ${field.type || 'Any'}"></i>
+                            <span class="node-field-name">${field.name}</span>
+                        `;
+                        if (field.value) {
+                            fieldHTML += `<span style="color:var(--text-secondary); opacity:0.5;">:</span> <span class="node-field-value">${field.value}</span>`;
+                        }
+                        fieldRow.innerHTML = fieldHTML;
+                        fieldsContainer.appendChild(fieldRow);
+                    });
+                    nodeEl.appendChild(fieldsContainer);
+                }
+
+                if (nodeData.isContainer) {
+                    const resizeHandle = document.createElement('div');
+                    resizeHandle.className = 'resize-handle';
+                    resizeHandle.addEventListener('mousedown', (e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        initManualResize(e, nodeData, nodeEl);
+                    });
+                    nodeEl.appendChild(resizeHandle);
+                }
+
+                // Add 4-Directional Structural Port Anchors
+                ['top', 'right', 'bottom', 'left'].forEach(dirAnchor => {
+                    const portBubble = document.createElement('div');
+                    portBubble.className = `port port-${dirAnchor}`;
+                    portBubble.setAttribute('data-owner-node-id', nodeData.id);
+                    portBubble.setAttribute('data-owner-port-dir', dirAnchor);
+                    
+                    nodeEl.appendChild(portBubble);
+                    portBubble.addEventListener('mousedown', (e) => {
+                        e.stopPropagation();
+                        systemState.activeRoutingSource = { nodeId: nodeData.id, dirAnchor };
+                    });
+                });
+
+                bindCanvasElementMovementInteractions(nodeEl, nodeData);
+                canvasSurface.appendChild(nodeEl);
+            });
+
+            synchronizeFluidVectorFlowPipelines();
+            updatePropertiesPanelDashboardView();
+        }
+
+        // Parent Housing Container Boundary & Cascading Move Logic Implementation
+        function bindCanvasElementMovementInteractions(nodeEl, nodeData) {
+            nodeEl.addEventListener('mousedown', (e) => {
+                if(e.target.classList.contains('port') || e.target.closest('.node-context-hud')) return;
+
+                systemState.selectedId = nodeData.id;
+                systemState.selectedType = 'node';
+                renderSubsystemsTopologyCanvas();
+
+                let mouseCursorStartX = e.clientX;
+                let mouseCursorStartY = e.clientY;
+                let originalBlockX = nodeData.x;
+                let originalBlockY = nodeData.y;
+                let rafId = null;
+
+                // Track original positional data coordinates arrays for executing dynamic cascading subsystem movements
+                const linkedChildComponentsMemorySnapshotList = systemState.nodes.filter(n => n.parentContainerId === nodeData.id).map(n => {
+                    return { id: n.id, currentOffsetDeltaX: n.x - nodeData.x, currentOffsetDeltaY: n.y - nodeData.y };
+                });
+
+                const executeMovementDragTracking = (moveEvt) => {
+                    if (rafId) cancelAnimationFrame(rafId);
+                    
+                    rafId = requestAnimationFrame(() => {
+                        nodeEl.classList.add('is-dragging');
+                        const deltaTranslationOffsetVectorX = (moveEvt.clientX - mouseCursorStartX) / systemState.zoom;
+                        const deltaTranslationOffsetVectorY = (moveEvt.clientY - mouseCursorStartY) / systemState.zoom;
+
+                        // 10px Grid Snapping
+                        let rawX = originalBlockX + deltaTranslationOffsetVectorX;
+                        let rawY = originalBlockY + deltaTranslationOffsetVectorY;
+                        
+                        // Spatial Containment Constraint Enforcement
+                        if(nodeData.parentContainerId) {
+                            const parentContext = systemState.nodes.find(n => n.id === nodeData.parentContainerId);
+                            if(parentContext) {
+                                const pX = parentContext.x, pY = parentContext.y;
+                                const pW = parentContext.width || 480, pH = parentContext.height || 320;
+                                const cW = nodeData.width || 140, cH = nodeData.height || 65;
+                                
+                                rawX = Math.max(pX + 10, Math.min(rawX, pX + pW - cW - 10));
+                                rawY = Math.max(pY + 10, Math.min(rawY, pY + pH - cH - 10));
+                            }
+                        }
+
+                        nodeData.x = Math.round(rawX / 10) * 10;
+                        nodeData.y = Math.round(rawY / 10) * 10;
+                        
+                        nodeEl.style.left = `${nodeData.x}px`;
+                        nodeEl.style.top = `${nodeData.y}px`;
+
+                        // Enforce structural containment constraint cascade rules directly to nested items arrays
+                        linkedChildComponentsMemorySnapshotList.forEach(childRecord => {
+                            const activeChildNodeObj = systemState.nodes.find(n => n.id === childRecord.id);
+                            if(activeChildNodeObj) {
+                                activeChildNodeObj.x = nodeData.x + childRecord.currentOffsetDeltaX;
+                                activeChildNodeObj.y = nodeData.y + childRecord.currentOffsetDeltaY;
+                                
+                                const childDOMBlock = document.getElementById(childRecord.id);
+                                if(childDOMBlock) {
+                                    childDOMBlock.style.left = `${activeChildNodeObj.x}px`;
+                                    childDOMBlock.style.top = `${activeChildNodeObj.y}px`;
+                                }
+                            }
+                        });
+
+                        synchronizeFluidVectorFlowPipelines();
+                        rafId = null;
+                    });
+                };
+
+                const terminateMovementDragTracking = () => {
+                    if (rafId) cancelAnimationFrame(rafId);
+                    nodeEl.classList.remove('is-dragging');
+                    window.removeEventListener('mousemove', executeMovementDragTracking);
+                    window.removeEventListener('mouseup', terminateMovementDragTracking);
+                    
+                    // Run a safety containment verification scan on target element location rules drop coordinates parameters
+                    if(!nodeData.isContainer) {
+                        const targetDropEnclosureObject = systemState.nodes.find(n => n.isContainer && n.id !== nodeData.id &&
+                            nodeData.x >= n.x && nodeData.x <= (n.x + (n.width || 480)) &&
+                            nodeData.y >= n.y && nodeData.y <= (n.y + (n.height || 320))
+                        );
+                        nodeData.parentContainerId = targetDropEnclosureObject ? targetDropEnclosureObject.id : null;
+                    }
+                    renderSubsystemsTopologyCanvas();
+                };
+
+                window.addEventListener('mousemove', executeMovementDragTracking);
+                window.addEventListener('mouseup', terminateMovementDragTracking);
+            });
+        }
+
+        // Terminal Ingress/Egress Global Connection Port Listener Target
+        let connectionPreviewPath = null;
+
+        window.addEventListener('mousemove', (e) => {
+            if (!systemState.activeRoutingSource) return;
+
+            if (!connectionPreviewPath) {
+                connectionPreviewPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                connectionPreviewPath.setAttribute('stroke', '#60a5fa');
+                connectionPreviewPath.setAttribute('stroke-width', '2');
+                connectionPreviewPath.setAttribute('stroke-dasharray', '5,5');
+                connectionPreviewPath.setAttribute('fill', 'none');
+                connectionPreviewPath.setAttribute('style', 'pointer-events:none;');
+                svgEdgeLayer.appendChild(connectionPreviewPath);
+            }
+
+            const srcNode = systemState.nodes.find(n => n.id === systemState.activeRoutingSource.nodeId);
+            const start = getAbsolutePortCoordinatesMatrix(srcNode, systemState.activeRoutingSource.dirAnchor);
+            
+            const rect = canvasContainer.getBoundingClientRect();
+            const mouseX = (e.clientX - rect.left - systemState.panX) / systemState.zoom;
+            const mouseY = (e.clientY - rect.top - systemState.panY) / systemState.zoom;
+
+            connectionPreviewPath.setAttribute('d', `M ${start.x} ${start.y} L ${mouseX} ${mouseY}`);
+
+            // Proximity magnetic highlight
+            document.querySelectorAll('.port').forEach(p => {
+                const pRect = p.getBoundingClientRect();
+                const dist = Math.hypot(e.clientX - (pRect.left + pRect.width/2), e.clientY - (pRect.top + pRect.height/2));
+                if (dist < 30) p.classList.add('magnetic-active');
+                else p.classList.remove('magnetic-active');
+            });
+        });
+
+        window.addEventListener('mouseup', (e) => {
+            if(!systemState.activeRoutingSource) return;
+
+            if (connectionPreviewPath) {
+                connectionPreviewPath.remove();
+                connectionPreviewPath = null;
+            }
+
+            // Magnetic snap detection
+            let targetPort = e.target.closest('.port');
+            if (!targetPort) {
+                const ports = document.querySelectorAll('.port');
+                for (let p of ports) {
+                    const pRect = p.getBoundingClientRect();
+                    const dist = Math.hypot(e.clientX - (pRect.left + pRect.width/2), e.clientY - (pRect.top + pRect.height/2));
+                    if (dist < 30) {
+                        targetPort = p;
+                        break;
+                    }
+                }
+            }
+
+            if(targetPort) {
+                const targetNodeId = targetPort.getAttribute('data-owner-node-id');
+                const targetPortDir = targetPort.getAttribute('data-owner-port-dir');
+                const srcPoint = systemState.activeRoutingSource;
+
+                if(srcPoint.nodeId !== targetNodeId) {
+                    systemState.connections.push({
+                        id: "wire_" + Date.now().toString().slice(-5),
+                        from: srcPoint.nodeId, fromPort: srcPoint.dirAnchor,
+                        to: targetNodeId, toPort: targetPortDir,
+                        direction: "left-to-right" // Default Ingress
+                    });
+                }
+            }
+
+            document.querySelectorAll('.port').forEach(p => p.classList.remove('magnetic-active'));
+            systemState.activeRoutingSource = null;
+            renderSubsystemsTopologyCanvas();
+        });
+
+        // Advanced Fluid Animated Cubic-Bézier Vector Path Lines Routing Renderer Engine
+        function synchronizeFluidVectorFlowPipelines() {
+            svgEdgeLayer.querySelectorAll('.wire-path-group').forEach(p => p.remove());
+
+            systemState.connections.forEach(wire => {
+                const srcNodeObj = systemState.nodes.find(n => n.id === wire.from);
+                const destNodeObj = systemState.nodes.find(n => n.id === wire.to);
+
+                if(!srcNodeObj || !destNodeObj) return;
+
+                const startCoordinates = getAbsolutePortCoordinatesMatrix(srcNodeObj, wire.fromPort);
+                const terminalCoordinates = getAbsolutePortCoordinatesMatrix(destNodeObj, wire.toPort);
+
+                const vectorGroupChassisDOM = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                vectorGroupChassisDOM.setAttribute('class', `wire-path-group ${systemState.selectedId === wire.id ? 'selected' : ''}`);
+                
+                // Add click interactivity handlers directly to vector lines
+                vectorGroupChassisDOM.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    systemState.selectedId = wire.id;
+                    systemState.selectedType = 'wire';
+                    document.querySelectorAll('.node').forEach(n => n.classList.remove('selected'));
+                    renderSubsystemsTopologyCanvas(); // Re-render to update selected classes
+                });
+
+                const midPointOffsetDistance = Math.abs(terminalCoordinates.x - startCoordinates.x) * 0.5;
+                let cpx1 = startCoordinates.x, cpy1 = startCoordinates.y;
+                let cpx2 = terminalCoordinates.x, cpy2 = terminalCoordinates.y;
+
+                if(wire.fromPort === 'right') cpx1 += midPointOffsetDistance;
+                else if(wire.fromPort === 'left') cpx1 -= midPointOffsetDistance;
+                if(wire.toPort === 'right') cpx2 += midPointOffsetDistance;
+                else if(wire.toPort === 'left') cpx2 -= midPointOffsetDistance;
+
+                const dPathAttributeString = `M ${startCoordinates.x} ${startCoordinates.y} C ${cpx1} ${cpy1}, ${cpx2} ${cpy2}, ${terminalCoordinates.x} ${terminalCoordinates.y}`;
+
+                // Invisible Hit Area (makes it much easier to click the thin line)
+                const hitAreaPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                hitAreaPath.setAttribute('d', dPathAttributeString);
+                hitAreaPath.setAttribute('class', 'wire-hit-area');
+                vectorGroupChassisDOM.appendChild(hitAreaPath);
+
+                // Base Structural Connection Trace Line Layout
+                const staticBaseLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                staticBaseLine.setAttribute('d', dPathAttributeString);
+                staticBaseLine.setAttribute('class', 'static-base-line');
+                staticBaseLine.setAttribute('stroke', systemState.selectedId === wire.id ? '#3b82f6' : '#3f3f52');
+                staticBaseLine.setAttribute('stroke-width', systemState.selectedId === wire.id ? '5' : '2.5');
+                staticBaseLine.setAttribute('fill', 'none');
+                vectorGroupChassisDOM.appendChild(staticBaseLine);
+
+                // Animated Fluid Data Stream overlay vector track path line layout
+                const fluidAnimatedOverlayLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                fluidAnimatedOverlayLine.setAttribute('d', dPathAttributeString);
+                fluidAnimatedOverlayLine.setAttribute('stroke', '#60a5fa');
+                fluidAnimatedOverlayLine.setAttribute('stroke-width', '2');
+                fluidAnimatedOverlayLine.setAttribute('fill', 'none');
+                fluidAnimatedOverlayLine.setAttribute('class', 'animated-flow-line');
+                fluidAnimatedOverlayLine.setAttribute('style', 'pointer-events:none;');
+
+                // Apply dynamic vector text marker flags based on configuration profiles
+                if(['left-to-right', 'acl', 'ohs', 'pl', 'bi-directional'].includes(wire.direction)) {
+                    fluidAnimatedOverlayLine.setAttribute('marker-end', 'url(#arrow-forward)');
+                }
+                if(['right-to-left', 'bi-directional'].includes(wire.direction)) {
+                    fluidAnimatedOverlayLine.setAttribute('marker-start', 'url(#arrow-reverse)');
+                }
+
+                vectorGroupChassisDOM.appendChild(fluidAnimatedOverlayLine);
+
+                // Add Relationship Labels
+                const textLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                textLabel.setAttribute('fill', '#a1a1aa');
+                textLabel.setAttribute('font-size', '10');
+                textLabel.setAttribute('font-weight', '600');
+                textLabel.setAttribute('text-anchor', 'middle');
+                textLabel.setAttribute('dy', '-5');
+                
+                // Position text at the middle of the curve
+                const pathLength = fluidAnimatedOverlayLine.getTotalLength();
+                const midPoint = fluidAnimatedOverlayLine.getPointAtLength(pathLength / 2);
+                textLabel.setAttribute('x', midPoint.x);
+                textLabel.setAttribute('y', midPoint.y);
+
+                let labelText = '';
+                switch(wire.direction) {
+                    case 'left-to-right': labelText = 'U -> D'; break;
+                    case 'right-to-left': labelText = 'D <- U'; break;
+                    case 'acl': labelText = 'U [ACL] -> D'; break;
+                    case 'ohs': labelText = 'U [OHS] -> D'; break;
+                    case 'pl': labelText = 'U [PL] -> D'; break;
+                    case 'sk': labelText = 'Shared Kernel (SK)'; break;
+                    case 'partnership': labelText = 'Partnership (P)'; break;
+                    case 'bi-directional': labelText = 'Customer/Supplier'; break;
+                }
+                textLabel.textContent = labelText;
+                vectorGroupChassisDOM.appendChild(textLabel);
+
+                svgEdgeLayer.appendChild(vectorGroupChassisDOM);
+            });
+        }
+
+        function getAbsolutePortCoordinatesMatrix(nodeObj, activeDirectionAnchor) {
+            const blockWidth = nodeObj.width || (nodeObj.isContainer ? 480 : 140);
+            const blockHeight = nodeObj.height || (nodeObj.isContainer ? 320 : 65);
+
+            let x = nodeObj.x, y = nodeObj.y;
+            
+            // Port circles are 10px wide and placed at -5px offset. 
+            // Their center is exactly at the border edge (0 offset relative to box size).
+            switch(activeDirectionAnchor) {
+                case 'top':     x += blockWidth / 2; break;
+                case 'right':   x += blockWidth;     y += blockHeight / 2; break;
+                case 'bottom':  x += blockWidth / 2; y += blockHeight; break;
+                case 'left':    y += blockHeight / 2; break;
+            }
+            return { x, y };
+        }
+
+        function initManualResize(e, nodeData, nodeEl) {
+            const startX = e.clientX;
+            const startY = e.clientY;
+            const startWidth = nodeData.width || 480;
+            const startHeight = nodeData.height || 320;
+
+            const onMouseMove = (moveEvt) => {
+                const deltaX = (moveEvt.clientX - startX) / systemState.zoom;
+                const deltaY = (moveEvt.clientY - startY) / systemState.zoom;
+                
+                let newW = Math.max(100, Math.round((startWidth + deltaX) / 10) * 10);
+                let newH = Math.max(60, Math.round((startHeight + deltaY) / 10) * 10);
+                
+                // Content-Aware Boundary Protection
+                const children = systemState.nodes.filter(n => n.parentContainerId === nodeData.id);
+                children.forEach(c => {
+                    const cW = c.width || 140, cH = c.height || 65;
+                    newW = Math.max(newW, (c.x - nodeData.x) + cW + 20);
+                    newH = Math.max(newH, (c.y - nodeData.y) + cH + 20);
+                });
+
+                nodeData.width = newW;
+                nodeData.height = newH;
+                
+                nodeEl.style.width = `${nodeData.width}px`;
+                nodeEl.style.height = `${nodeData.height}px`;
+                
+                synchronizeFluidVectorFlowPipelines();
+                updatePropertiesPanelDashboardView();
+            };
+
+            const onMouseUp = () => {
+                window.removeEventListener('mousemove', onMouseMove);
+                window.removeEventListener('mouseup', onMouseUp);
+            };
+
+            window.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('mouseup', onMouseUp);
+        }
+
+        // Global Callback Handlers for HUD interaction ribbons hooks
+        function focusPropertyController(id, type) {
+            systemState.selectedId = id; systemState.selectedType = type;
+            renderSubsystemsTopologyCanvas();
+        }
+
+        function updateFieldName(nodeId, fieldIndex, newName) {
+            const node = systemState.nodes.find(n => n.id === nodeId);
+            if (node && node.fields && node.fields[fieldIndex]) {
+                node.fields[fieldIndex].name = newName;
+                renderSubsystemsTopologyCanvas();
+            }
+        }
+
+        function updateFieldType(nodeId, fieldIndex, newType) {
+            const node = systemState.nodes.find(n => n.id === nodeId);
+            if (node && node.fields && node.fields[fieldIndex]) {
+                node.fields[fieldIndex].type = newType;
+                renderSubsystemsTopologyCanvas();
+            }
+        }
+
+        function updateFieldValue(nodeId, fieldIndex, newValue) {
+            const node = systemState.nodes.find(n => n.id === nodeId);
+            if (node && node.fields && node.fields[fieldIndex]) {
+                node.fields[fieldIndex].value = newValue;
+                renderSubsystemsTopologyCanvas();
+            }
+        }
+
+        function removeField(nodeId, fieldIndex) {
+            const node = systemState.nodes.find(n => n.id === nodeId);
+            if (node && node.fields && node.fields[fieldIndex]) {
+                node.fields.splice(fieldIndex, 1);
+                renderSubsystemsTopologyCanvas();
+            }
+        }
+
+        function pruneTargetNodeRecord(id) {
+            // Updated to use a more generic deletion logic if needed, but keeping original name for HUD compatibility
+            deleteSelectedObject(id, 'node');
+        }
+
+        function deleteSelectedObject(id, type) {
+            if (type === 'node') {
+                systemState.nodes = systemState.nodes.filter(n => n.id !== id);
+                systemState.connections = systemState.connections.filter(c => c.from !== id && c.to !== id);
+            } else if (type === 'wire') {
+                systemState.connections = systemState.connections.filter(c => c.id !== id);
+            }
+            
+            if(systemState.selectedId === id) {
+                systemState.selectedId = null;
+                systemState.selectedType = null;
+            }
+            renderSubsystemsTopologyCanvas();
+        }
+
+        // Property Controls Input Binding Elements Manager Form Data Hooks
+        function initPropertiesEditorFormBindings() {
+            const propFieldWidth = document.getElementById('prop-width');
+            const propFieldHeight = document.getElementById('prop-height');
+            const propFieldIcon = document.getElementById('prop-icon');
+            const btnAutoFit = document.getElementById('btn-auto-fit');
+
+            const btnUnbindParent = document.getElementById('btn-unbind-parent');
+
+            document.getElementById('btn-close-props').addEventListener('click', () => {
+                systemState.selectedId = null;
+                systemState.selectedType = null;
+                renderSubsystemsTopologyCanvas();
+            });
+
+            document.getElementById('btn-add-field').addEventListener('click', () => {
+                const nameInput = document.getElementById('new-field-name');
+                const typeInput = document.getElementById('new-field-type');
+                const valueInput = document.getElementById('new-field-value');
+                const name = nameInput.value.trim();
+                const type = typeInput.value.trim();
+                const value = valueInput.value.trim();
+
+                if (name && systemState.selectedId && systemState.selectedType === 'node') {
+                    const nodeData = systemState.nodes.find(n => n.id === systemState.selectedId);
+                    if (nodeData) {
+                        if (!nodeData.fields) nodeData.fields = [];
+                        nodeData.fields.push({ name, type, value });
+                        nameInput.value = '';
+                        typeInput.value = '';
+                        valueInput.value = '';
+                        renderSubsystemsTopologyCanvas();
+                    }
+                }
+            });
+
+            document.getElementById('btn-delete-selection').addEventListener('click', () => {
+                if(systemState.selectedId && systemState.selectedType) {
+                    deleteSelectedObject(systemState.selectedId, systemState.selectedType);
+                }
+            });
+            
+            btnUnbindParent.addEventListener('click', () => {
+                if(!systemState.selectedId || systemState.selectedType !== 'node') return;
+                const activeNode = systemState.nodes.find(n => n.id === systemState.selectedId);
+                if(activeNode) {
+                    activeNode.parentContainerId = null;
+                    renderSubsystemsTopologyCanvas();
+                }
+            });
+
+            // ... (keyboard shortcut listener remains same)
+
+            propFieldLabel.addEventListener('input', (e) => {
+                if(!systemState.selectedId || systemState.selectedType !== 'node') return;
+                const activeNode = systemState.nodes.find(n => n.id === systemState.selectedId);
+                if(activeNode) {
+                    activeNode.label = e.target.value;
+                    const liveTitleBlockDOM = document.getElementById(activeNode.id).querySelector('.node-text-title');
+                    if(liveTitleBlockDOM) liveTitleBlockDOM.textContent = activeNode.label;
+                    synchronizeFluidVectorFlowPipelines();
+                }
+            });
+
+            propFieldIcon.addEventListener('input', (e) => {
+                if(!systemState.selectedId || systemState.selectedType !== 'node') return;
+                const activeNode = systemState.nodes.find(n => n.id === systemState.selectedId);
+                if(activeNode) {
+                    activeNode.icon = e.target.value || 'fa-microchip';
+                    const iconEl = document.getElementById(activeNode.id).querySelector('.node-header-wrap i');
+                    if(iconEl) {
+                        iconEl.className = `fa-solid ${activeNode.icon}`;
+                    }
+                }
+            });
+
+            [propFieldWidth, propFieldHeight].forEach(field => {
+                field.addEventListener('input', () => {
+                    if(!systemState.selectedId || systemState.selectedType !== 'node') return;
+                    const activeNode = systemState.nodes.find(n => n.id === systemState.selectedId);
+                    if(activeNode) {
+                        let targetW = parseInt(propFieldWidth.value) || 100;
+                        let targetH = parseInt(propFieldHeight.value) || 60;
+
+                        if (activeNode.isContainer) {
+                            const children = systemState.nodes.filter(n => n.parentContainerId === activeNode.id);
+                            children.forEach(c => {
+                                const cW = c.width || 140, cH = c.height || 65;
+                                targetW = Math.max(targetW, (c.x - activeNode.x) + cW + 20);
+                                targetH = Math.max(targetH, (c.y - activeNode.y) + cH + 20);
+                            });
+                        }
+
+                        activeNode.width = targetW;
+                        activeNode.height = targetH;
+                        
+                        // Sync back to inputs if they were clamped
+                        propFieldWidth.value = activeNode.width;
+                        propFieldHeight.value = activeNode.height;
+
+                        const el = document.getElementById(activeNode.id);
+                        if(el) {
+                            el.style.width = `${activeNode.width}px`;
+                            el.style.height = `${activeNode.height}px`;
+                        }
+                        synchronizeFluidVectorFlowPipelines();
+                    }
+                });
+            });
+
+            btnAutoFit.addEventListener('click', () => {
+                if(!systemState.selectedId || systemState.selectedType !== 'node') return;
+                const activeNode = systemState.nodes.find(n => n.id === systemState.selectedId);
+                if(activeNode && activeNode.isContainer) {
+                    const children = systemState.nodes.filter(n => n.parentContainerId === activeNode.id);
+                    if(children.length === 0) return;
+                    
+                    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+                    children.forEach(c => {
+                        const w = c.width || 140;
+                        const h = c.height || 65;
+                        minX = Math.min(minX, c.x); minY = Math.min(minY, c.y);
+                        maxX = Math.max(maxX, c.x + w); maxY = Math.max(maxY, c.y + h);
+                    });
+
+                    const padding = 40;
+                    activeNode.x = minX - padding;
+                    activeNode.y = minY - padding;
+                    activeNode.width = (maxX - minX) + (padding * 2);
+                    activeNode.height = (maxY - minY) + (padding * 2);
+                    
+                    renderSubsystemsTopologyCanvas();
+                }
+            });
+
+            propFieldFlowDirection.addEventListener('change', (e) => {
+                if(!systemState.selectedId || systemState.selectedType !== 'wire') return;
+                const activeWire = systemState.connections.find(w => w.id === systemState.selectedId);
+                if(activeWire) { activeWire.direction = e.target.value; synchronizeFluidVectorFlowPipelines(); }
+            });
+
+            document.querySelectorAll('.color-bubble-item').forEach(bubble => {
+                bubble.addEventListener('click', () => {
+                    if(!systemState.selectedId || systemState.selectedType !== 'node') return;
+                    const activeNode = systemState.nodes.find(n => n.id === systemState.selectedId);
+                    if(activeNode) { activeNode.color = bubble.getAttribute('data-color'); renderSubsystemsTopologyCanvas(); }
+                });
+            });
+        }
+
+        function updatePropertiesPanelDashboardView() {
+            const propPanel = document.getElementById('floating-prop-panel');
+            if(!systemState.selectedId) {
+                propPanel.classList.remove('active');
+                return;
+            }
+
+            propPanel.classList.add('active');
+            propPaneActiveEditor.style.display = 'flex';
+
+            const propFieldWidth = document.getElementById('prop-width');
+            const propFieldHeight = document.getElementById('prop-height');
+            const propFieldIcon = document.getElementById('prop-icon');
+            const btnAutoFit = document.getElementById('btn-auto-fit');
+            const btnUnbindParent = document.getElementById('btn-unbind-parent');
+            const dimControls = document.getElementById('dimension-controls');
+
+            const fieldsEditorBlock = document.getElementById('fields-editor-block');
+            const fieldsList = document.getElementById('fields-list');
+
+            if(systemState.selectedType === 'node') {
+                flowPropsBlock.style.display = 'none';
+                nodeStylingColorBlock.style.display = 'block';
+                fieldsEditorBlock.style.display = 'flex';
+                dimControls.style.display = 'flex';
+                propFieldIcon.parentElement.style.display = 'flex';
+                
+                const nodeData = systemState.nodes.find(n => n.id === systemState.selectedId);
+                if(nodeData) {
+                    propFieldId.value = nodeData.id;
+                    propFieldLabel.value = nodeData.label;
+                    propFieldIcon.value = nodeData.icon || 'fa-microchip';
+                    propFieldWidth.value = nodeData.width || (nodeData.isContainer ? 480 : 140);
+                    propFieldHeight.value = nodeData.height || (nodeData.isContainer ? 320 : 65);
+                    btnAutoFit.style.display = nodeData.isContainer ? 'block' : 'none';
+                    btnUnbindParent.style.display = nodeData.parentContainerId ? 'block' : 'none';
+                    
+                    document.querySelectorAll('.color-bubble-item').forEach(b => {
+                        if(b.getAttribute('data-color') === nodeData.color) b.classList.add('active');
+                        else b.classList.remove('active');
+                    });
+
+                    // Populate Fields List
+                    fieldsList.innerHTML = '';
+                    if (nodeData.fields) {
+                        nodeData.fields.forEach((field, index) => {
+                            const fieldDiv = document.createElement('div');
+                            fieldDiv.className = 'field-editor-row';
+                            fieldDiv.innerHTML = `
+                                <input type="text" class="prop-input" value="${field.name}" style="flex:1;" onchange="updateFieldName('${nodeData.id}', ${index}, this.value)">
+                                <input type="text" class="prop-input" value="${field.type || ''}" style="flex:1;" onchange="updateFieldType('${nodeData.id}', ${index}, this.value)">
+                                <input type="text" class="prop-input" value="${field.value || ''}" style="flex:1;" onchange="updateFieldValue('${nodeData.id}', ${index}, this.value)">
+                                <button class="btn-icon-small" onclick="removeField('${nodeData.id}', ${index})"><i class="fa-solid fa-trash"></i></button>
+                            `;
+                            fieldsList.appendChild(fieldDiv);
+                        });
+                    }
+                }
+            } else if(systemState.selectedType === 'wire') {
+                flowPropsBlock.style.display = 'flex';
+                nodeStylingColorBlock.style.display = 'none';
+                fieldsEditorBlock.style.display = 'none';
+                dimControls.style.display = 'none';
+                btnAutoFit.style.display = 'none';
+                btnUnbindParent.style.display = 'none';
+                propFieldIcon.parentElement.style.display = 'none';
+                
+                const wireData = systemState.connections.find(w => w.id === systemState.selectedId);
+                if(wireData) {
+                    propFieldId.value = wireData.id;
+                    propFieldLabel.value = `Flow line wire trace connect [ ${wireData.from} -> ${wireData.to} ]`;
+                    propFieldFlowDirection.value = wireData.direction;
+                }
+            }
+        }
+
+        // Data Synchronization Blueprint Model Serialization Mechanics
+        function initDataSynchronizationModalsEngine() {
+            const modalDOM = document.getElementById('code-sync-modal');
+            const textareaDOM = document.getElementById('serialization-textarea-box');
+
+            document.getElementById('btn-open-code').addEventListener('click', () => {
+                textareaDOM.value = JSON.stringify({ nodes: systemState.nodes, connections: systemState.connections }, null, 4);
+                modalDOM.classList.add('open');
+            });
+
+            document.getElementById('btn-close-modal').addEventListener('click', () => modalDOM.classList.remove('open'));
+            document.getElementById('btn-copy-code').addEventListener('click', () => { textareaDOM.select(); document.execCommand('copy'); });
+
+            document.getElementById('btn-apply-code').addEventListener('click', () => {
+                try {
+                    const parsedBlueprintCodeObj = JSON.parse(textareaDOM.value);
+                    if(parsedBlueprintCodeObj.nodes && parsedBlueprintCodeObj.connections) {
+                        systemState.nodes = parsedBlueprintCodeObj.nodes;
+                        systemState.connections = parsedBlueprintCodeObj.connections;
+                        systemState.selectedId = null;
+                        renderSubsystemsTopologyCanvas();
+                        modalDOM.classList.remove('open');
+                    }
+                } catch(err) { alert("Syntax Compiler Parsing Schema violation detected."); }
+            });
+
+            document.getElementById('btn-clear-canvas').addEventListener('click', () => {
+                if(confirm("Confirm action to purge workspace elements diagram model mapping?")) {
+                    systemState.nodes = []; systemState.connections = []; systemState.selectedId = null;
+                    renderSubsystemsTopologyCanvas();
+                }
+            });
+
+            // Standalone Isolated SVG High-Resolution Output Importer Package Engine
+            document.getElementById('btn-save-svg').addEventListener('click', () => {
+                const structuralIsolatedSvgBundleFile = generateSvgData();
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(new Blob([structuralIsolatedSvgBundleFile], { type: 'image/svg+xml;charset=utf-8' }));
+                link.download = `ddd_topology_${Date.now()}.svg`;
+                link.click();
+            });
+
+            // Animated GIF Export Engine Implementation
+            document.getElementById('btn-save-gif').addEventListener('click', async () => {
+                const btn = document.getElementById('btn-save-gif');
+                const originalContent = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Recording (2s)...';
+                btn.disabled = true;
+
+                try {
+                    const gif = new GIF({
+                        workers: 2,
+                        quality: 10,
+                        width: 1200,
+                        height: 750,
+                        workerScript: 'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js'
+                    });
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 1200;
+                    canvas.height = 750;
+                    const ctx = canvas.getContext('2d');
+
+                    const frameCount = 12; // Capture 12 frames over 1.2s
+                    const delay = 100; // 100ms per frame
+
+                    for (let i = 0; i < frameCount; i++) {
+                        const svgData = generateSvgData(i * (1.2 / frameCount));
+                        const img = await svgToImage(svgData);
+                        ctx.fillStyle = '#09090b';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        ctx.drawImage(img, 0, 0);
+                        gif.addFrame(ctx, { copy: true, delay: delay });
+                        await new Promise(r => setTimeout(r, delay));
+                    }
+
+                    gif.on('finished', (blob) => {
+                        const link = document.createElement('a');
+                        link.href = URL.createObjectURL(blob);
+                        link.download = `ddd_flow_animation_${Date.now()}.gif`;
+                        link.click();
+                        btn.innerHTML = originalContent;
+                        btn.disabled = false;
+                    });
+
+                    gif.render();
+                } catch (err) {
+                    console.error("GIF Export Failed:", err);
+                    alert("Failed to generate GIF. See console for details.");
+                    btn.innerHTML = originalContent;
+                    btn.disabled = false;
+                }
+            });
+
+            function generateSvgData(timeOffset = 0) {
+                let dynamicNodeSvgMarkup = '';
+                systemState.nodes.forEach(n => {
+                    const w = n.isContainer ? 480 : 140;
+                    const h = n.isContainer ? 320 : 65;
+                    const fStyle = n.isContainer ? 'stroke-dasharray="5,5"' : '';
+                    dynamicNodeSvgMarkup += `
+                    <g transform="translate(${n.x}, ${n.y})">
+                        <rect width="${w}" height="${h}" rx="8" fill="#111115" stroke="${n.color}" stroke-width="2.5" ${fStyle}/>
+                        <text x="40" y="25" fill="#ffffff" font-family="sans-serif" font-size="12" font-weight="600">${n.label}</text>
+                    </g>`;
+                });
+
+                // Calculate dash offset for animation snapshot
+                const dashOffset = -((timeOffset / 1.2) * 20);
+                
+                // Clone SVG to modify for static capture
+                const svgClone = svgEdgeLayer.cloneNode(true);
+                svgClone.querySelectorAll('.animated-flow-line').forEach(line => {
+                    line.style.animation = 'none';
+                    line.setAttribute('stroke-dashoffset', dashOffset);
+                });
+
+                return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1200" height="750" style="background-color:#09090b;">${svgClone.innerHTML}${dynamicNodeSvgMarkup}</svg>`;
+            }
+
+            function svgToImage(svgData) {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+                    const url = URL.createObjectURL(svgBlob);
+                    img.onload = () => {
+                        URL.revokeObjectURL(url);
+                        resolve(img);
+                    };
+                    img.onerror = reject;
+                    img.src = url;
+                });
+            }
+        }
+    </script>
+</body>
+</html>
